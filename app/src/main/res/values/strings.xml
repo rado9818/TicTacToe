@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Tic Tac Toe</string>
+    <string name="player_1_playing">Player 1 is playing:</string>
+    <string name="player_2_playing">Player 2 is playing:</string>
+</resources>

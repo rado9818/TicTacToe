@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PlayerVsPlayerGameActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="16dp"
+        android:id="@+id/current_playing_txt"/>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/tic_tac_toe_grid_view"
+        android:columnCount="3"
+        android:stretchMode="columnWidth"
+        android:gravity="center">
+
+        <TableRow
+            android:weightSum="3">
+
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_0_0"/>
+
+
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_0_1"/>
+
+
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_0_2"/>
+        </TableRow>
+        <TableRow>
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_1_0"/>
+
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_1_1"/>
+
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_1_2"/>
+
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_2_0"/>
+
+
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_2_1"/>
+
+            <TextView
+                style="@style/element_style"
+                android:id="@+id/item_2_2"/>
+
+        </TableRow>
+    </TableLayout>
+
+</RelativeLayout>
