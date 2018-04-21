@@ -13,14 +13,9 @@ import java.util.Random;
 import java.util.Timer;
 
 public class PlayerVsPlayerGameActivity extends AppCompatActivity {
-
     //a few constants
     private final char player1Symbol = 'X';
     private final char player2Symbol = 'O';
-
-    private final int gridX = 3;
-    private final int gridY = 3;
-    private final int winningNeeded = 3;
 
 
     //declare a custom data type to indicate a player
@@ -35,7 +30,6 @@ public class PlayerVsPlayerGameActivity extends AppCompatActivity {
     //Thus, we avoid code repetition
     TextView[][] textViewItems;
 
-
     //a 2D array of char. It contains only spaces at the beginning in order to indicate that the bord is empty.
     char[][] currentBoard = {
             {' ', ' ', ' '},
@@ -43,9 +37,12 @@ public class PlayerVsPlayerGameActivity extends AppCompatActivity {
             {' ', ' ', ' '}
     };
 
+    int symbolsPut = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //set the layout - open this file to see the UI elements
         setContentView(R.layout.activity_player_vs_player_game);
 
         //we randomly pick the player who is going to play first
@@ -83,13 +80,24 @@ public class PlayerVsPlayerGameActivity extends AppCompatActivity {
                             int clicked[] = numberTo2DIndex((int)v.getTag());
                             currentBoard[clicked[0]][clicked[1]] = symbol;
                             //check if anybody is winning
-                            if(isWinning(symbol)){
+                            symbolsPut++;
+
+                            if(new Board(currentBoard).isWinning(symbol)){
                                 //if we have a winner, congratulate her/him on
                                 showWinDialog(symbol);
+                                symbolsPut = 0;
+                            }
+                            else {
+                                //increment the indication of symbols put
+                                //if the board is full and there is no winner,
+                                //restart and say it is a draw
+                                if (symbolsPut == Constants.gridX * Constants.gridY) {
+                                    Toast.makeText(PlayerVsPlayerGameActivity.this, "Draw", Toast.LENGTH_LONG).show();
+                                    restartGame();
+                                    symbolsPut = 0;
+                                }
                             }
                         }
-
-                        Log.d("Tag", "tag " + v.getTag());
                     }
                 });
             }
@@ -98,8 +106,10 @@ public class PlayerVsPlayerGameActivity extends AppCompatActivity {
     }
 
     private void showWinDialog(char symbol) {
-        String text = (symbol == player1Symbol ? "Player 1 wins" : "Player 2 wins");
+        String text = (symbol == player1Symbol ? getString(R.string.player_1_wins) : getString(R.string.player_2_wins));
+        //show a message to indicate the winning player
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+        //wait 2 seconds before restarting the game
         new CountDownTimer(2000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -114,6 +124,11 @@ public class PlayerVsPlayerGameActivity extends AppCompatActivity {
     }
 
     private void initializeUI() {
+        /*
+            findViewById will give us a reference to an UI view so we can use it in our code
+            R is automatically generated class by the Android SDK. It contains references
+            to the resources
+        */
         ticTacToeGrid = findViewById(R.id.tic_tac_toe_grid_view);
         currentPlayingText = findViewById(R.id.current_playing_txt);
         currentPlayingText.setText(getTextCurrentPlaying());
@@ -134,6 +149,7 @@ public class PlayerVsPlayerGameActivity extends AppCompatActivity {
     }
 
     private char getSymbolToPut(){
+        //reverse the players and get the symbol to put
         if(nowPlaying==Player.Player1){
             nowPlaying = Player.Player2;
             return player1Symbol;
@@ -151,122 +167,32 @@ public class PlayerVsPlayerGameActivity extends AppCompatActivity {
 
     }
 
-    private boolean isWinning(char c){
-        return checkRows(c) || checkColumns(c) || checkPrimaryDiagonal(c) || checkSecondaryDiagonal(c);
 
-    }
 
     int[] numberTo2DIndex(int number){
-        return new int[]{number/gridX, number%gridY};
-    }
-
-
-    private boolean checkRows(char c){
-        int elementsInRow = 0;
-
-        //go through each row
-        for(int i=0; i<gridX; i++){
-
-            //go through each column
-            for(int j=0; j<gridY; j++){
-
-                //check if the element has been put by me. That is,
-                //if I am player 1, I need an X and if I am player 2, I need a Y
-                if(currentBoard[i][j]==c){
-                    elementsInRow++;
-                    if(elementsInRow==winningNeeded){
-                        return true;
-                    }
-                }else{
-                    break;
-                }
-            }
-            elementsInRow=0;
-        }
-
-        return false;
-    }
-
-
-    private boolean checkColumns(char c){
-        int elementsInRow = 0;
-
-        //go through each column
-        for(int i=0; i<gridY; i++){
-
-            //go through each row
-            for(int j=0; j<gridX; j++){
-
-                //check if the element has been put by me. That is,
-                //if I am player 1, I need an X and if I am player 2, I need a Y
-                if(currentBoard[j][i]==c){
-                    elementsInRow++;
-                    if(elementsInRow==winningNeeded){
-                        return true;
-                    }
-                }else{
-                    break;
-                }
-            }
-            elementsInRow=0;
-        }
-
-        return false;
-    }
-
-    private boolean checkPrimaryDiagonal(char c){
-        int elementsInRow = 0;
-
-        //checking the primary diagonal is simple - its indexes are [0, 0], [1, 1], [2, 2]
-        //These are always two identical numbers
-        for(int i=0; i<gridX; i++){
-
-            //check if the element has been put by me. That is,
-            //if I am player 1, I need an X and if I am player 2, I need a Y
-                if(currentBoard[i][i]==c){
-                    elementsInRow++;
-                    if(elementsInRow==winningNeeded){
-                        return true;
-                    }
-                }else{
-                    break;
-                }
-
-        }
-
-        return false;
-    }
-
-    private boolean checkSecondaryDiagonal(char c){
-        int elementsInRow = 0;
-
         /*
-            in oreder to check the secondary diagonal, we need to go
-            from top to bottom and from right to left
-            The indexes we are looking for are [0, 2], [1, 1], [2, 0]
-            We notice that the sum of the two number is always 2.
-            This means that the first number is i and the second number is
-            gridX-i-1. We subtract 1 to take into account the fact
-            that arrays in Java are 0-based.
+            create an array of two numbers - the two indexes of the 2D array
+            //Take the number 7 for example. Recall that our grid starts from 0:
+            0 1 2
+            3 4 5
+            6 7 8
+            Therefore, it is in row 2, element 1 (keep in mind we are 0-based).
+            If we divide 7/3 as integers (that is, we do NOT take the reminder into account),
+            we get 2 (the number of row). If we get the reminder itself - 7%3 - we get 1
+            (the number of the column). Here is how we find the reminder:
+                7/3 = 2,
+                2*3 + r = 7
+                r = 1
         */
-        for(int i=0; i<gridX; i++){
 
-            //check if the element has been put by me. That is,
-            //if I am player 1, I need an X and if I am player 2, I need a Y
-            if(currentBoard[i][gridX-i-1]==c){
-                elementsInRow++;
-                if(elementsInRow==winningNeeded){
-                    return true;
-                }
-            }else{
-                break;
-            }
-        }
-
-        return false;
+        return new int[]{number/Constants.gridX, number%Constants.gridY};
     }
+
+
+
 
     private void restartGame(){
+        //set all the data to its initial state
         currentBoard = new char[][]{
                 {' ', ' ', ' '},
                 {' ', ' ', ' '},
