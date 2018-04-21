@@ -1,4 +1,4 @@
-package netea.com.tictactoe;
+package radoslav.com.tictactoe;
 
 public class Constants {
     public static final int gridX = 3;

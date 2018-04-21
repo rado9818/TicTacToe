@@ -1,4 +1,4 @@
-package netea.com.tictactoe;
+package radoslav.com.tictactoe;
 
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
